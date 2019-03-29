@@ -1,0 +1,10 @@
+<<<<<<< HEAD
+*.exe
+*.obj
+*.tds
+=======
+### Ignorar###
+*.obj
+*.tds
+*.exe
+>>>>>>> Grupo1
