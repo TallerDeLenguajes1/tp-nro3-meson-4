@@ -1,3 +1,4 @@
-*.exe
+### Ignorar###
 *.obj
 *.tds
+*.exe
