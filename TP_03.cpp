@@ -4,7 +4,7 @@
 #include <string.h>
 #include <time.h>
 
-enum TRaza{Orco = 1, Humano, Mago, Enano, Elfo};
+enum TRaza{Orco, Humano, Mago, Enano, Elfo};
 char Nombres[6][30]={"Rocket", "Gato", "Chubaca", "Pikachu", "Perro", "Capitan"};
 char Apellidos[6][30]={" Cansado", " Pro", " Loco", " Malo", " Traumado", " Bueno"};
 
@@ -39,19 +39,25 @@ void MostrarCarac(TCaracteristicas *puntCarac);
 int main(void)
 {	
 	srand(time(NULL));
-	struct TDatos Dat, *pDat;
-	pDat = (TDatos *) malloc(sizeof(TDatos));
-	pDat = &Dat;
-
-	TCaracteristicas Carac, *puntCarac;
-
-	puntCarac = (TCaracteristicas *)malloc(sizeof(TCaracteristicas));
-	puntCarac = &Carac;
-
-	Cargar_DatPj(pDat);
-	Mostrar_DatPj(pDat);
-	CargarCarac(puntCarac);
-	MostrarCarac(puntCarac);
+    TPersonaje *npersonaje; 
+    int i=0;
+ 
+ 	npersonaje=(TPersonaje *)malloc(sizeof(TPersonaje *)*5);
+	
+   while(i<5){
+	npersonaje[i].DatosPersonales=(TDatos*)malloc(sizeof(TDatos));
+	npersonaje[i].Caracteristicas=(TCaracteristicas*)malloc(sizeof(TCaracteristicas));
+	Cargar_DatPj(npersonaje[i].DatosPersonales);
+	CargarCarac(npersonaje[i].Caracteristicas);
+	i++;
+   }
+    i=0;
+	while(i<5){
+     Mostrar_DatPj(npersonaje[i].DatosPersonales);
+	MostrarCarac(npersonaje[i].Caracteristicas);
+	i++;
+	}
+   
 
 
 
@@ -63,19 +69,19 @@ void CargarCarac(TCaracteristicas *puntCarac){
 
 	int numAle;
 
-	numAle = rand()% 10;
+	numAle = 1 + rand()% 10;
 	(*puntCarac).velocidad= numAle;
 
-	numAle = rand()% 5;
+	numAle = 1+ rand()% 5;
 	(*puntCarac).destreza= numAle;
 
-	numAle = rand()% 10;
+	numAle = 1+ rand()% 10;
 	(*puntCarac).fuerza = numAle;
 
-	numAle = rand()% 10;
+	numAle = 1+ rand()% 10;
 	(*puntCarac).Nivel = numAle;
 
-	numAle = rand()% 10;
+	numAle = 1+ rand()% 10;
 	(*puntCarac).Armadura = numAle;
 
 }
@@ -90,14 +96,29 @@ void MostrarCarac(TCaracteristicas *puntCarac){
 }
 //Funcion Cargar datos del personaje
 void Cargar_DatPj(struct TDatos *DatosPj){
-	int ale = 1 + rand() % (5-1);
-	DatosPj->Raza = ale;
-	ale = 0 + rand() % (5-0);
-	strcpy(DatosPj->ApellidoNombre, Nombres[ale]); //Copio la cadena de nombres aleatoriamente
-	ale = 0 + rand() % (5-0);
-	strcat(DatosPj->ApellidoNombre, Apellidos[ale]);//Junto la cadena anterior con un apellido aleatorio
-	ale = 0 + rand() % (300-0);
-	DatosPj->edad = ale;
+	int numAle = 1 + rand() % (5-1);
+	printf("numAle: %d\n", numAle);
+
+   DatosPj->ApellidoNombre=(char*)malloc(sizeof(char)*70);
+	switch(numAle){
+		case 0:DatosPj->Raza=Orco;
+		break;
+		case 1:DatosPj->Raza=Humano;
+		break;
+		case 2:DatosPj->Raza=Mago;
+		break;
+		case 3:DatosPj->Raza=Enano;
+		break;
+		case 4:DatosPj->Raza=Elfo;
+		break;     
+
+	}
+	numAle = 0 + rand() % (5-0);
+	strcpy(DatosPj->ApellidoNombre, Nombres[numAle]); //Copio la cadena de nombres aleatoriamente
+	numAle = 0 + rand() % (5-0);
+	strcat(DatosPj->ApellidoNombre, Apellidos[numAle]);//Junto la cadena anterior con un apellido aleatorio
+	numAle = 0 + rand() % (300-0);
+	DatosPj->edad = numAle;
 	DatosPj->Salud = 100;
 }
 
