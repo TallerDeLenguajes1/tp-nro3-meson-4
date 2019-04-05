@@ -165,8 +165,7 @@ int Eleccion(){
 void Pelea(struct TPersonaje *Personaje, int uno, int dos){
 	printf("\n-----------La pelea entre los dos personajes comienza-----------\n");
 	uno--; dos--;
-	float Danio;
-	int PD, PDEF, MDP = 50000, ED, VA, ale, j=0;
+	int Danio,PD, PDEF, MDP = 50000, ED, VA, ale, j = 0;
 	for (int i = 0; i < 3; ++i)
 	{
 		printf("\n-----------RONDA %d-----------\n", ++j);
@@ -177,8 +176,7 @@ void Pelea(struct TPersonaje *Personaje, int uno, int dos){
 		VA = PD * ED;
 		PDEF = Personaje[dos].Caracteristicas->Armadura * Personaje[dos].Caracteristicas->velocidad;
 
-		Danio = (float)((VA-PDEF)/MDP)*100;
-		printf("%.3f\n", Danio);
+		Danio = ((VA - PDEF) / MDP) * 100;
 		
 		Personaje[dos].DatosPersonales->Salud = Personaje[dos].DatosPersonales->Salud - Danio;
 		printf("La cantidad de danio provocado por %s a %s fue de: %d\n",Personaje[uno].DatosPersonales->ApellidoNombre, Personaje[dos].DatosPersonales->ApellidoNombre, Danio);
@@ -199,8 +197,7 @@ void Pelea(struct TPersonaje *Personaje, int uno, int dos){
 			VA = PD * ED;
 			PDEF = Personaje[uno].Caracteristicas->Armadura * Personaje[uno].Caracteristicas->velocidad;
 
-			Danio = (float)((VA-PDEF)/MDP)*100;
-			printf("%.3f\n", Danio);
+			Danio = ((VA - PDEF) / MDP) * 100;
 			
 			Personaje[uno].DatosPersonales->Salud = Personaje[uno].DatosPersonales->Salud - Danio;
 			printf("La cantidad de danio provocado por %s a %s fue de: %d\n",Personaje[dos].DatosPersonales->ApellidoNombre, Personaje[uno].DatosPersonales->ApellidoNombre, Danio);
