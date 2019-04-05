@@ -37,7 +37,7 @@ void Mostrar_DatPj(struct TDatos *);
 void CargarCarac(TCaracteristicas *puntCarac);
 void MostrarCarac(TCaracteristicas *puntCarac);
 int Eleccion();
-void Pelea(TPersonaje *, int, int);
+void Pelea(struct TPersonaje *, int, int);
 
 int main(void)
 {	
@@ -119,12 +119,16 @@ void Cargar_DatPj(struct TDatos *DatosPj){
 	int ale = 1 + rand() % (5-1);
 	DatosPj->Raza = (TRaza)ale;
 	ale = 0 + rand() % (5-0);
+	char temp[60];
+	
 
-	(*DatosPj).ApellidoNombre = (char *) malloc(sizeof(char));
-
-	strcpy(DatosPj->ApellidoNombre, Nombres[ale]); //Copio la cadena de nombres aleatoriamente
+	strcpy(temp, Nombres[ale]); //Copio la cadena de nombres aleatoriamente
 	ale = 0 + rand() % (5-0);
-	strcat(DatosPj->ApellidoNombre, Apellidos[ale]);//Junto la cadena anterior con un apellido aleatorio
+	strcat(temp, Apellidos[ale]);//Junto la cadena anterior con un apellido aleatorio
+
+	(*DatosPj).ApellidoNombre = (char *) malloc(sizeof(temp));
+	strcpy((*DatosPj).ApellidoNombre, temp); //Copio la cadena de nombres aleatoriamente
+
 	ale = 0 + rand() % (300-0);
 	DatosPj->edad = ale;
 	DatosPj->Salud = 100;
@@ -158,33 +162,71 @@ int Eleccion(){
 	return(i);
 }
 
-void Pelea(TPersonaje *Personaje, int uno, int dos){
-	printf("La pelea entre los dos personajes comienza\n");
+void Pelea(struct TPersonaje *Personaje, int uno, int dos){
+	printf("\n-----------La pelea entre los dos personajes comienza-----------\n");
 	uno--; dos--;
-	int PD, ED, VA, PDEF, MDP = 50000, ale = 1 + rand() % 100, Danio;
+	float Danio;
+	int PD, PDEF, MDP = 50000, ED, VA, ale, j=0;
 	for (int i = 0; i < 3; ++i)
 	{
+		printf("\n-----------RONDA %d-----------\n", ++j);
 		//ATAQUE DEL PRIMER PERSONAJE
-		PD = Personaje[uno].Caracteristicas.destreza * Personaje[uno].Caracteristicas.fuerza * Personaje[uno].Caracteristicas.Nivel;
-		ED = ale/100;
+		PD = Personaje[uno].Caracteristicas->destreza * Personaje[uno].Caracteristicas->fuerza * Personaje[uno].Caracteristicas->Nivel;
+		ale = 1 + rand() % 100;
+		ED = ale;
 		VA = PD * ED;
-		PDEF = Personaje[dos].Caracteristicas.armadura * Personaje[dos].Caracteristicas.velocidad;
+		PDEF = Personaje[dos].Caracteristicas->Armadura * Personaje[dos].Caracteristicas->velocidad;
 
-		if (PDEF > VA)
-		{
-			Danio = 0;
-		}else {
-			Danio = VA - PDEF;
-		}
-
-		if (Danio > MDP)
-		{
-			Danio = MDP;
-		}
+		Danio = (float)((VA-PDEF)/MDP)*100;
+		printf("%.3f\n", Danio);
 		
-		Personaje[dos].DatosPersonales.Salud = Personaje[dos].DatosPersonales.Salud - Danio;
-		printf("La cantidad de danio provocado del primer personaje al segundo fue de: %d\n", Danio);
-		printf("El segundo personaje quedo con %.2f de salud\n", Personaje[dos].DatosPersonales.Salud);
+		Personaje[dos].DatosPersonales->Salud = Personaje[dos].DatosPersonales->Salud - Danio;
+		printf("La cantidad de danio provocado por %s a %s fue de: %d\n",Personaje[uno].DatosPersonales->ApellidoNombre, Personaje[dos].DatosPersonales->ApellidoNombre, Danio);
+		if (Personaje[dos].DatosPersonales->Salud < 0)
+		{
+			Personaje[dos].DatosPersonales->Salud = 0;
+		}
+		printf("%s quedo con %.3f de salud\n",Personaje[dos].DatosPersonales->ApellidoNombre, Personaje[dos].DatosPersonales->Salud);
+
+		if (Personaje[dos].DatosPersonales->Salud <= 0)
+		{
+			i = 3;
+		}else{
+			//ATAQUE DEL SEGUNDO PERSONAJE
+			PD = Personaje[dos].Caracteristicas->destreza * Personaje[dos].Caracteristicas->fuerza * Personaje[dos].Caracteristicas->Nivel;
+			ale = 1 + rand() % 100;
+			ED = ale;
+			VA = PD * ED;
+			PDEF = Personaje[uno].Caracteristicas->Armadura * Personaje[uno].Caracteristicas->velocidad;
+
+			Danio = (float)((VA-PDEF)/MDP)*100;
+			printf("%.3f\n", Danio);
+			
+			Personaje[uno].DatosPersonales->Salud = Personaje[uno].DatosPersonales->Salud - Danio;
+			printf("La cantidad de danio provocado por %s a %s fue de: %d\n",Personaje[dos].DatosPersonales->ApellidoNombre, Personaje[uno].DatosPersonales->ApellidoNombre, Danio);
+			if (Personaje[uno].DatosPersonales->Salud < 0)
+			{
+				Personaje[uno].DatosPersonales->Salud = 0;
+			}
+			printf("%s quedo con %.3f de salud\n",Personaje[uno].DatosPersonales->ApellidoNombre, Personaje[uno].DatosPersonales->Salud);
+			if (Personaje[uno].DatosPersonales->Salud <= 0)
+			{
+				i = 3;
+			}
+		}
+	}
+
+	if (Personaje[uno].DatosPersonales->Salud == Personaje[dos].DatosPersonales->Salud)
+	{
+		printf("\n%s y %s han empatado\n", Personaje[uno].DatosPersonales->ApellidoNombre, Personaje[dos].DatosPersonales->ApellidoNombre);
+	}
+
+	if (Personaje[uno].DatosPersonales->Salud > Personaje[dos].DatosPersonales->Salud) 
+	{
+		printf("\nEl personaje: %s a ganado\n", Personaje[uno].DatosPersonales->ApellidoNombre);
+	}
+	if (Personaje[uno].DatosPersonales->Salud < Personaje[dos].DatosPersonales->Salud){
+		printf("\nEl personaje: %s a ganado\n", Personaje[dos].DatosPersonales->ApellidoNombre);
 	}
 
 }
