@@ -157,7 +157,7 @@ void Mostrar_DatPj(struct TDatos *DatosPj){
 
 int Eleccion(){
 	int i;
-	printf("Elija personaje: \n");
+	printf("Elija el numero del personaje que quiere seleccionar: \n");
 	scanf("%d", &i);
 	return(i);
 }
@@ -165,7 +165,8 @@ int Eleccion(){
 void Pelea(struct TPersonaje *Personaje, int uno, int dos){
 	printf("\n-----------La pelea entre los dos personajes comienza-----------\n");
 	uno--; dos--;
-	int Danio,PD, PDEF, MDP = 50000, ED, VA, ale, j = 0;
+	float Danio, MDP = 50000;
+	int PD, PDEF, ED, VA, ale, j=0;
 	for (int i = 0; i < 3; ++i)
 	{
 		printf("\n-----------RONDA %d-----------\n", ++j);
@@ -176,10 +177,9 @@ void Pelea(struct TPersonaje *Personaje, int uno, int dos){
 		VA = PD * ED;
 		PDEF = Personaje[dos].Caracteristicas->Armadura * Personaje[dos].Caracteristicas->velocidad;
 
-		Danio = ((VA - PDEF) / MDP) * 100;
-		
+		Danio = (float)((VA-PDEF)/MDP)*100;		
 		Personaje[dos].DatosPersonales->Salud = Personaje[dos].DatosPersonales->Salud - Danio;
-		printf("La cantidad de danio provocado por %s a %s fue de: %d\n",Personaje[uno].DatosPersonales->ApellidoNombre, Personaje[dos].DatosPersonales->ApellidoNombre, Danio);
+		printf("La cantidad de danio provocado por %s a %s fue de: %.3f\n",Personaje[uno].DatosPersonales->ApellidoNombre, Personaje[dos].DatosPersonales->ApellidoNombre, Danio);
 		if (Personaje[dos].DatosPersonales->Salud < 0)
 		{
 			Personaje[dos].DatosPersonales->Salud = 0;
@@ -197,10 +197,10 @@ void Pelea(struct TPersonaje *Personaje, int uno, int dos){
 			VA = PD * ED;
 			PDEF = Personaje[uno].Caracteristicas->Armadura * Personaje[uno].Caracteristicas->velocidad;
 
-			Danio = ((VA - PDEF) / MDP) * 100;
+			Danio = (float)((VA-PDEF)/MDP)*100;
 			
 			Personaje[uno].DatosPersonales->Salud = Personaje[uno].DatosPersonales->Salud - Danio;
-			printf("La cantidad de danio provocado por %s a %s fue de: %d\n",Personaje[dos].DatosPersonales->ApellidoNombre, Personaje[uno].DatosPersonales->ApellidoNombre, Danio);
+			printf("La cantidad de danio provocado por %s a %s fue de: %.3f\n",Personaje[dos].DatosPersonales->ApellidoNombre, Personaje[uno].DatosPersonales->ApellidoNombre, Danio);
 			if (Personaje[uno].DatosPersonales->Salud < 0)
 			{
 				Personaje[uno].DatosPersonales->Salud = 0;
