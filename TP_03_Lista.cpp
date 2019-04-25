@@ -40,31 +40,21 @@ void CargarCarac(TCaracteristicas *puntCarac);
 void MostrarCarac(TCaracteristicas *puntCarac);
 int Eleccion();
 void Pelea(struct TPersonaje *);
-void AgregarPersonaje(TPersonaje **, int);
-void MostrarPersonaje(TPersonaje *);
+void AgregarPersonajesAlFinal(TPersonaje **, int);
+void MostrarPersonajes(TPersonaje *);
 void Eleccion_Lista(TPersonaje *, TPersonaje **, int);
+int SeleccionMenu();
+void Menu(struct TPersonaje *);
+void EliminarPersonaje(TPersonaje **, int);
+void MostrarUnPersonaje(TPersonaje *);
 
 int main(void)
 {	
 	srand(time(NULL));
-	int n;
 	TPersonaje *PJ = NULL;
 
-	printf("Ingrese cuantos personajes desea cargar: ");
-	scanf("%d", &n);
-
-
-	//CARGO LOS DATOS Y CARACTERISTICAS EN LA LISTA N VECES
-	AgregarPersonaje(&PJ, n);
-	
-
-	//MUESTRO LOS DATOS Y CARACTERISTICAS EN LA LISTA
-	MostrarPersonaje(PJ);
-
-
-	//PELEA DE LOS PERSONAJES
-	Pelea(PJ);
-	
+	//MENU CON TODAS LAS OPERACIONES DE LISTA
+	Menu(PJ);	
 
 	return 0;
 }
@@ -202,6 +192,8 @@ void Pelea(struct TPersonaje *Personaje){
 				i = 3;
 			}
 		}
+
+			//MostrarPersonajes(Personaje);
 	}
 
 	if (PJ1->DatosPersonales->Salud == PJ2->DatosPersonales->Salud)
@@ -212,9 +204,15 @@ void Pelea(struct TPersonaje *Personaje){
 	if (PJ1->DatosPersonales->Salud > PJ2->DatosPersonales->Salud) 
 	{
 		printf("\n!!!!!!!!El personaje: %s a ganado!!!!!!!!\n", PJ1->DatosPersonales->ApellidoNombre);
+		printf("\nEl personaje: %s ha sido eliminado del juego :(!!!\n", PJ2->DatosPersonales->ApellidoNombre);
+		EliminarPersonaje(&Personaje, dos);
 	}
+
+
 	if (PJ1->DatosPersonales->Salud < PJ2->DatosPersonales->Salud){
 		printf("\n!!!!!!!!El personaje: %s a ganado!!!!!!!!\n", PJ2->DatosPersonales->ApellidoNombre);
+		printf("\nEl personaje: %s ha sido eliminado del juego :(!!!\n", PJ1->DatosPersonales->ApellidoNombre);
+		EliminarPersonaje(&Personaje, uno);
 	}
 
 }
@@ -240,7 +238,7 @@ void Eleccion_Lista(TPersonaje *Inicio, TPersonaje **Personaje, int num)
 
 }
 
-void AgregarPersonaje(TPersonaje ** lista, int cant)
+void AgregarPersonajesAlFinal(TPersonaje ** lista, int cant)
 {
 	TPersonaje *aux;
 	TPersonaje *nuevo_pj;
@@ -271,7 +269,7 @@ void AgregarPersonaje(TPersonaje ** lista, int cant)
 	
 }
 
-void MostrarPersonaje(TPersonaje * lista)
+void MostrarPersonajes(TPersonaje * lista)
 {
 	TPersonaje *temp = lista;
 	int cont = 0;
@@ -283,5 +281,101 @@ void MostrarPersonaje(TPersonaje * lista)
 		MostrarCarac(temp->Caracteristicas);//MUESTRO LAS CARACTERISTICAS
 		printf("\n==============================================\==============================================\n");
 		temp = temp->siguiente;
+	}
+}
+
+int SeleccionMenu()
+{
+	int num;
+	printf("\n.::MENU::.\nSeleccione un numero del menu:\n\n================================================\n\n");
+	printf("1: Mostrar todos los personajes\n2: Eliminar un personaje\n3: Buscar un personaje\n4: Jugar en Arena\n5: Agregar personajes\n6: Salir\n");
+	scanf("%d", &num);
+	return (num);
+}
+
+void Menu(struct TPersonaje *Personaje)
+{
+	int salir = 0, cant, pos;
+	do
+	{
+		int num = SeleccionMenu();
+		switch(num)
+		{
+			case 1: MostrarPersonajes(Personaje);
+			break;
+			case 2: 
+				printf("\nIngrese el numero del personaje que desea eliminar: ");
+				scanf("%d", &pos);
+				EliminarPersonaje(&Personaje, pos);
+			break;
+			case 3: MostrarUnPersonaje(Personaje);
+			break;
+			case 4: Pelea(Personaje);
+			break;
+			case 5:
+				printf("\nIngrese cuantos personajes quiere agregar: ");
+				scanf("%d", &cant);
+				AgregarPersonajesAlFinal(&Personaje, cant);
+			break;
+			case 6: salir = 1;
+			break;
+			default: printf("\nPorfavor ingrese un numero valido :(!!!\n");
+			break;
+		}
+	}while(salir != 1);
+}
+
+void EliminarPersonaje(TPersonaje **Personajes, int num)
+{
+	TPersonaje *aux = (*Personajes);
+	TPersonaje *anterior;
+	int cont = 1;
+
+	if (num == 1)
+	{
+		(*Personajes) = aux->siguiente;
+		free(aux);
+	}else
+	{
+		while (cont < num && aux)
+		{	
+			cont++;
+			anterior = aux;
+			aux = aux->siguiente;
+		}
+
+		if (aux != NULL)
+		{
+			anterior->siguiente = aux->siguiente;
+			free(aux);
+		}else
+		{
+			printf("\nNo existe el personaje\n");
+		}
+	}
+}
+
+void MostrarUnPersonaje(TPersonaje *Personajes)
+{
+	TPersonaje *aux = Personajes;
+	int num, cont = 1;
+	printf("\nIngrese el numero del personaje que desea ver: ");
+	scanf("%d", &num);
+
+	while (cont < num && aux)
+	{
+		cont++;
+		aux = aux->siguiente;
+	}
+
+	if (aux != NULL)
+	{
+		printf("\n<<<<<<PERSONAJE: %d>>>>>>\n", cont);
+		Mostrar_DatPj(aux->DatosPersonales);//MUESTRO LOS DATOS
+		MostrarCarac(aux->Caracteristicas);//MUESTRO LAS CARACTERISTICAS
+		printf("\n==============================================\==============================================\n");
+	}else
+	{
+		printf("\nNo existe el personaje\n");
 	}
 }
