@@ -130,7 +130,7 @@ void MostrarCarac(TCaracteristicas *puntCarac){
 //Funcion Cargar datos del personaje
 void Cargar_DatPj(struct TDatos *DatosPj){
 	int numAle = 1 + rand() % (5-1);
-	DatosPj->ApellidoNombre = (char * )malloc(sizeof(char *));
+	
 	switch(numAle){
 		case 0:
 		DatosPj->Raza = Orco;
@@ -149,9 +149,18 @@ void Cargar_DatPj(struct TDatos *DatosPj){
 		break;
 	}
 	numAle = 0 + rand() % (5-0);
+	//contamos la cantidad de letras necesarias para el nombre
+	int cant =  strlen(Nombres[numAle]);
+	cant +=  strlen(Apellidos[numAle]);
+	
+	//reservamos la cantidad de letras del nombre
+	DatosPj->ApellidoNombre = (char * )malloc(sizeof(char) * cant + 1 );
+
 	strcpy(DatosPj->ApellidoNombre, Nombres[numAle]); //Copio la cadena de nombres aleatoriamente
 	numAle = 0 + rand() % (5-0);
 	strcat(DatosPj->ApellidoNombre, Apellidos[numAle]);//Junto la cadena anterior con un apellido aleatorio
+
+
 	numAle = 0 + rand() % (300-0);
 	DatosPj->edad = numAle;
 	DatosPj->Salud = 100;
