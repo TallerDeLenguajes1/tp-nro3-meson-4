@@ -5,7 +5,7 @@
 #include <time.h>
 #define MAX 3
 
-enum TRaza{Orco, Humano, Mago, Enano, Elfo};
+typedef enum {Orco=1, Humano, Mago, Enano, Elfo}TRaza;
 char Nombres[6][30]={"Rocket", "Gato", "Chubaca", "Pikachu", "Perro", "Capitan"};
 char Apellidos[6][30]={" Cansado", " Pro", " Loco", " Malo", " Traumado", " Bueno"};
 
@@ -32,53 +32,86 @@ struct TPersonaje {
 };
 typedef struct TPersonaje TPersonaje;
 
+struct nodo{
+	TPersonaje *DatosPersonaje;
+	struct nodo *siguiente;
+};
+typedef struct nodo *Lista;
+
 int Menu();
 void Cargar_DatPj(struct TDatos *);
 void Mostrar_DatPj(struct TDatos *);
 void CargarCarac(TCaracteristicas *puntCarac);
 void MostrarCarac(TCaracteristicas *puntCarac);
 void Pelea(TPersonaje *arrePjs, int primerPJ, int segPJ);
+Lista IniciarLista();
+int esListaVacia(Lista start);
+Lista CargarLista(Lista start,TPersonaje * persona);
+Lista CargarFinal(Lista start,TPersonaje * Personaje);
+void mostrar(Lista L);
+Lista borrarLista(Lista start);
+Lista borrarNodo(Lista start, int num);
+void buscarElemento(Lista start,int num);
+
 
 int main(void)
 {	
 	srand(time(NULL));
-	struct TDatos *pDat;
-	TCaracteristicas *puntCarac;
-	TPersonaje *arrePjs;
+	TPersonaje * arrePjs;
+	Lista L;
 	int i=0, num, segPJ;
 
-	arrePjs = (TPersonaje *)malloc(sizeof(TPersonaje)*MAX);
+	
+	L = IniciarLista();
 
-	//-----Tarea 3----
-	while(i<3){
-		arrePjs[i].DatosPersonales = (TDatos *) malloc(sizeof(TDatos));
-		arrePjs[i].Caracteristicas = (TCaracteristicas *)malloc(sizeof(TCaracteristicas));
-		Cargar_DatPj(arrePjs[i].DatosPersonales);
-		CargarCarac(arrePjs[i].Caracteristicas);
+	/*while(i<3){
+		arrePjs =  (TPersonaje *) malloc(sizeof(TPersonaje));
+		arrePjs -> DatosPersonales = (TDatos *) malloc(sizeof(TDatos));
+	    arrePjs ->Caracteristicas = (TCaracteristicas *)malloc(sizeof(TCaracteristicas));
+		Cargar_DatPj(arrePjs -> DatosPersonales);
+		CargarCarac(arrePjs -> Caracteristicas);
+		L = CargarLista(L, arrePjs);
 		i++;
-	}
-
+	}*/
+	
 	do{
 		num = Menu();
 		switch(num){
 			case 1:
-				printf("\n- Por favor, ingrese el numero del personaje que desea ver: ");
-				scanf("%d", &i);
-				printf("\n|=====Personaje %d=====|\n\n", i);
-				Mostrar_DatPj(arrePjs[i-1].DatosPersonales);
-				MostrarCarac(arrePjs[i-1].Caracteristicas);
+				arrePjs =  (TPersonaje *) malloc(sizeof(TPersonaje));
+				arrePjs -> DatosPersonales = (TDatos *) malloc(sizeof(TDatos));
+	   	 		arrePjs ->Caracteristicas = (TCaracteristicas *)malloc(sizeof(TCaracteristicas));
+				Cargar_DatPj(arrePjs -> DatosPersonales);
+				CargarCarac(arrePjs -> Caracteristicas);
+				L = CargarLista(L, arrePjs);
 				break;
 			case 2:
-				printf("Por favor, elija el primer personaje: ");
+				arrePjs =  (TPersonaje *) malloc(sizeof(TPersonaje));
+				arrePjs -> DatosPersonales = (TDatos *) malloc(sizeof(TDatos));
+	    		arrePjs ->Caracteristicas = (TCaracteristicas *)malloc(sizeof(TCaracteristicas));
+				Cargar_DatPj(arrePjs -> DatosPersonales);
+				CargarCarac(arrePjs -> Caracteristicas);
+				L = CargarFinal(L, arrePjs);
+				break;
+			case 3:
+				printf("Ingrese la posicion del personaje que desea ver: ");
 				scanf("%d", &i);
-				printf("\nPor favor, elija el segundo personaje: ");
-				scanf("%d", &segPJ);
-				Pelea(arrePjs, i, segPJ);
+				buscarElemento(L, i);
+				break;
+			case 4:
+				L = borrarLista(L);
+				break;
+			case 5:
+				printf("Ingrese la posicion del personaje que desea borrar: ");
+				scanf("%d", &i);
+				L = borrarNodo(L, i);
+				break;
+			case 6: mostrar(L);
+				break;
+			case 7:
 				break;
 		}
 	}while(num!=9);
-	//-----------------------------
-
 
 	return 0;
 }
@@ -88,9 +121,14 @@ int Menu(){
 	int num;
 
 	printf("\n\n<<<<<< Menu >>>>>>\n\n");
-	printf("1 - Mostrar personaje.\n");
-	printf("2 - Comenzar pelea entre 2 personajes.\n");
-	printf("9 - Salir.\n");
+	printf(" 1 - Insertar un nuevo Personaje al comienzo de la lista \n");
+	printf(" 2 - Insertar un nuevo Personaje al final de la lista. \n");
+	printf(" 3 - Buscar un Personaje en una posicion particular \n");
+	printf(" 4 - Eliminar un Personaje de la lista \n");
+	printf(" 5 - Eliminar un Personaje de la lista en una posicion particular. \n");
+	printf(" 6 - Mostrar todos los personajes.\n");
+	printf(" 7 - Comenzar pelea entre 2 personajes.\n");
+	printf(" 9 - Salir.\n");
 	printf("Por favor elija un numero del menu: ");
 	scanf("%d", &num);
 
@@ -130,7 +168,7 @@ void MostrarCarac(TCaracteristicas *puntCarac){
 //Funcion Cargar datos del personaje
 void Cargar_DatPj(struct TDatos *DatosPj){
 	int numAle = 1 + rand() % (5-1);
-	DatosPj->ApellidoNombre = (char * )malloc(sizeof(char *));
+	
 	switch(numAle){
 		case 0:
 		DatosPj->Raza = Orco;
@@ -149,9 +187,18 @@ void Cargar_DatPj(struct TDatos *DatosPj){
 		break;
 	}
 	numAle = 0 + rand() % (5-0);
+	//contamos la cantidad de letras necesarias para el nombre
+	int cant =  strlen(Nombres[numAle]);
+	cant +=  strlen(Apellidos[numAle]);
+	
+	//reservamos la cantidad de letras del nombre
+	DatosPj->ApellidoNombre = (char * )malloc(sizeof(char) * cant + 1 );
+
 	strcpy(DatosPj->ApellidoNombre, Nombres[numAle]); //Copio la cadena de nombres aleatoriamente
 	numAle = 0 + rand() % (5-0);
 	strcat(DatosPj->ApellidoNombre, Apellidos[numAle]);//Junto la cadena anterior con un apellido aleatorio
+
+
 	numAle = 0 + rand() % (300-0);
 	DatosPj->edad = numAle;
 	DatosPj->Salud = 100;
@@ -218,4 +265,115 @@ void Pelea(TPersonaje *arrePjs, int primerPJ, int segPJ){
 	}
 }
 
+Lista IniciarLista(){
+	Lista A = NULL;
+	return A;
+}
 
+int esListaVacia(Lista start){
+	if(start==NULL){
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
+Lista CargarLista(Lista start,TPersonaje * Personaje){
+	Lista nuevo;
+	nuevo = (Lista )malloc(sizeof(Lista));
+
+	nuevo->DatosPersonaje = Personaje;
+	nuevo->siguiente = start;
+	start = nuevo;
+
+	return start;
+}
+
+Lista CargarFinal(Lista start,TPersonaje * Personaje){
+	Lista nuevo = (Lista )malloc(sizeof(Lista));
+	
+	if(!esListaVacia(start))
+	{
+		Lista aux = start;
+		while(aux->siguiente!=NULL)
+		{
+			aux = aux->siguiente;
+		}
+
+		nuevo->DatosPersonaje = Personaje;
+		nuevo->siguiente = NULL;
+		aux->siguiente = nuevo;	
+	}
+	else
+	{
+		start = CargarLista(start, Personaje);
+	}
+	return start;
+}
+
+void mostrar(Lista L){
+	struct nodo *varAux; //Lista varAux;
+	varAux = L;
+	while(varAux!=NULL){
+		Mostrar_DatPj(varAux->DatosPersonaje->DatosPersonales);
+		MostrarCarac(varAux->DatosPersonaje->Caracteristicas);
+		varAux = varAux->siguiente;
+	}
+}
+
+Lista borrarLista(Lista start){
+	Lista aux=start;
+	if(esListaVacia(start)){
+		return start;
+	}else{
+   	   start=start->siguiente;
+       free(aux);
+       return start ;
+	}
+}
+
+Lista borrarNodo(Lista start, int num){
+	Lista aux = start;
+	Lista anterior;
+	int i=1;
+
+	if(num==1){
+		if(esListaVacia(start)){
+			return start;
+		}else{
+   	   		start=start->siguiente;
+       		free(aux);
+       		return start;
+		}
+	}else{
+		while(i<num && aux!=NULL){
+			anterior = aux;
+			aux = aux->siguiente;
+			i++;
+		}
+		if(aux!=NULL){
+			anterior->siguiente = aux->siguiente;
+			free(aux);
+		}
+		return start;
+	}
+}
+void buscarElemento(Lista start,int num){
+	Lista aux=start;
+	int valor=0, i=1;
+	while(aux!=NULL && valor!=1){
+	  if(i==num){//Si el elemento está en el nodo entonces igualo a 1
+		printf("Entra en el primer if\n");
+		valor=1;
+      }else{
+      	aux=aux->siguiente;
+      }
+      i++;
+	}
+	if(esListaVacia(aux)){
+		printf("La lista esta vacia o no contiene ningun personaje en esta posicion.");
+	}else{
+		Mostrar_DatPj(aux->DatosPersonaje->DatosPersonales);
+		MostrarCarac(aux->DatosPersonaje->Caracteristicas);
+	}
+}
