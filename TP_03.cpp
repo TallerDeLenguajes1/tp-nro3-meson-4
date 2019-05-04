@@ -40,14 +40,13 @@ void CargarCarac(TCaracteristicas *puntCarac);
 void MostrarCarac(TCaracteristicas *puntCarac);
 int Eleccion();
 void Pelea(struct TPersonaje *);
-void AgregarPersonaje(TPersonaje **, int);
+void AgregarPersonajesAlFinal(TPersonaje **, int);
 void MostrarPersonajes(TPersonaje *);
 void Eleccion_Lista(TPersonaje *, TPersonaje **, int);
 int SeleccionMenu();
 void Menu(struct TPersonaje *);
-void EliminarPersonaje(TPersonaje **);
+void EliminarPersonaje(TPersonaje **, int);
 void MostrarUnPersonaje(TPersonaje *);
-void EliminacionPorPelea(TPersonaje **, int);
 
 int main(void)
 {	
@@ -193,6 +192,8 @@ void Pelea(struct TPersonaje *Personaje){
 				i = 3;
 			}
 		}
+
+			//MostrarPersonajes(Personaje);
 	}
 
 	if (PJ1->DatosPersonales->Salud == PJ2->DatosPersonales->Salud)
@@ -204,12 +205,14 @@ void Pelea(struct TPersonaje *Personaje){
 	{
 		printf("\n!!!!!!!!El personaje: %s a ganado!!!!!!!!\n", PJ1->DatosPersonales->ApellidoNombre);
 		printf("\nEl personaje: %s ha sido eliminado del juego :(!!!\n", PJ2->DatosPersonales->ApellidoNombre);
-		EliminacionPorPelea(&Personaje, dos);
+		EliminarPersonaje(&Personaje, dos);
 	}
+
+
 	if (PJ1->DatosPersonales->Salud < PJ2->DatosPersonales->Salud){
 		printf("\n!!!!!!!!El personaje: %s a ganado!!!!!!!!\n", PJ2->DatosPersonales->ApellidoNombre);
 		printf("\nEl personaje: %s ha sido eliminado del juego :(!!!\n", PJ1->DatosPersonales->ApellidoNombre);
-		EliminacionPorPelea(&Personaje, uno);
+		EliminarPersonaje(&Personaje, uno);
 	}
 
 }
@@ -235,7 +238,7 @@ void Eleccion_Lista(TPersonaje *Inicio, TPersonaje **Personaje, int num)
 
 }
 
-void AgregarPersonaje(TPersonaje ** lista, int cant)
+void AgregarPersonajesAlFinal(TPersonaje ** lista, int cant)
 {
 	TPersonaje *aux;
 	TPersonaje *nuevo_pj;
@@ -292,7 +295,7 @@ int SeleccionMenu()
 
 void Menu(struct TPersonaje *Personaje)
 {
-	int salir = 0, cant;
+	int salir = 0, cant, pos;
 	do
 	{
 		int num = SeleccionMenu();
@@ -300,16 +303,19 @@ void Menu(struct TPersonaje *Personaje)
 		{
 			case 1: MostrarPersonajes(Personaje);
 			break;
-			case 2: EliminarPersonaje(&Personaje);
+			case 2: 
+				printf("\nIngrese el numero del personaje que desea eliminar: ");
+				scanf("%d", &pos);
+				EliminarPersonaje(&Personaje, pos);
 			break;
 			case 3: MostrarUnPersonaje(Personaje);
 			break;
 			case 4: Pelea(Personaje);
 			break;
 			case 5:
-			printf("\nIngrese cuantos personajes quiere agregar: ");
-			scanf("%d", &cant);
-			AgregarPersonaje(&Personaje, cant);
+				printf("\nIngrese cuantos personajes quiere agregar: ");
+				scanf("%d", &cant);
+				AgregarPersonajesAlFinal(&Personaje, cant);
 			break;
 			case 6: salir = 1;
 			break;
@@ -319,17 +325,15 @@ void Menu(struct TPersonaje *Personaje)
 	}while(salir != 1);
 }
 
-void EliminarPersonaje(TPersonaje **Personajes)
+void EliminarPersonaje(TPersonaje **Personajes, int num)
 {
-	TPersonaje *aux = &Personajes;
+	TPersonaje *aux = (*Personajes);
 	TPersonaje *anterior;
-	int num, cont = 1;
-	printf("\nIngrese el numero del personaje que desea eliminar: ");
-	scanf("%d", &num);
+	int cont = 1;
 
 	if (num == 1)
 	{
-		(*Personajes) = (*Personajes)->siguiente;
+		(*Personajes) = aux->siguiente;
 		free(aux);
 	}else
 	{
@@ -338,7 +342,6 @@ void EliminarPersonaje(TPersonaje **Personajes)
 			cont++;
 			anterior = aux;
 			aux = aux->siguiente;
-
 		}
 
 		if (aux != NULL)
@@ -374,38 +377,5 @@ void MostrarUnPersonaje(TPersonaje *Personajes)
 	}else
 	{
 		printf("\nNo existe el personaje\n");
-	}
-}
-
-void EliminacionPorPelea(TPersonaje **Inicio, int num)
-{
-	TPersonaje *aux = (*Inicio);
-	TPersonaje *anterior;
-	int cont = 1;
-
-	if (num == 1)
-	{
-		(*Inicio) = (*Inicio)->siguiente;
-		free(aux);
-	}
-	else
-	{
-
-		while (cont < num && aux)
-		{	
-			cont++;
-			anterior = aux;
-			aux = aux->siguiente;
-
-		}
-
-		if (aux != NULL)
-		{
-			anterior->siguiente = aux->siguiente;
-			free(aux);
-		}else
-		{
-			printf("\nha ocurrido un error!!!\n");
-		}
 	}
 }
